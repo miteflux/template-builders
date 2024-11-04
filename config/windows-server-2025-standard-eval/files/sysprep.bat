@@ -15,8 +15,6 @@ mkdir "C:\Program Files\Virt"
 copy /Y "e:\balloon\2k25\amd64\blnsvr.exe" "C:\Program Files\Virt"
 cmd /c "C:\Program Files\Virt\blnsvr.exe" -i
 
-diskpart /s A:\diskpart.txt
-
 copy /Y "A:\windows.py" "C:\Program Files\Cloudbase Solutions\Cloudbase-Init\Python\Lib\site-packages\cloudbaseinit\osutils\"
 
 reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
