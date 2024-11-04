@@ -1,7 +1,5 @@
 net stop tiledatamodelsvc
 
-diskpart /s A:\diskpart.txt
-
 msiexec /i e:\guest-agent\qemu-ga-x86_64.msi
 sc config qemu-ga start=auto
 sc config "QEMU Guest Agent VSS Provider" start=auto
@@ -16,11 +14,6 @@ pnputil -i -a e:\balloon\2k25\amd64\balloon.inf
 mkdir "C:\Program Files\Virt"
 copy /Y "e:\balloon\2k25\amd64\blnsvr.exe" "C:\Program Files\Virt"
 cmd /c "C:\Program Files\Virt\blnsvr.exe" -i
-
-slmgr //b /upk
-slmgr //b /cpky
-slui //b /ipk TVRH6-WHNXV-R9WG3-9XRFY-MY832
-DISM /Online /Set-Edition:ServerStandard /ProductKey:TVRH6-WHNXV-R9WG3-9XRFY-MY832 /AcceptEula /NoRestart
 
 copy /Y "A:\windows.py" "C:\Program Files\Cloudbase Solutions\Cloudbase-Init\Python\Lib\site-packages\cloudbaseinit\osutils\"
 
