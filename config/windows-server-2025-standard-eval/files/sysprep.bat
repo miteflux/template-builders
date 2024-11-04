@@ -1,5 +1,7 @@
 net stop tiledatamodelsvc
 
+diskpart /s A:\diskpart.txt
+
 msiexec /i e:\guest-agent\qemu-ga-x86_64.msi
 sc config qemu-ga start=auto
 sc config "QEMU Guest Agent VSS Provider" start=auto

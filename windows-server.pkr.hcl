@@ -227,8 +227,8 @@ build {
     only             = [
       "qemu.server-2025-standard-eval"
     ]
+    valid_exit_codes = [0, 3010]
     inline = [
-      "diskpart /s A:\\diskpart.txt",
       "slmgr //b /upk",
       "slmgr //b /cpky",
       "slui //b /ipk TVRH6-WHNXV-R9WG3-9XRFY-MY832",
