@@ -18,5 +18,5 @@ if [ -f "./source/virtio-win.iso" ]; then
     echo "virtio-win.iso already exists. Skipping..."
 else
   echo "Downloading virtio-win.iso..."
-  curl https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.248-1/virtio-win.iso -o ./source/virtio-win.iso -L -#
+  curl https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.262-2/virtio-win-0.1.262.iso -o ./source/virtio-win.iso -L -#
 fi
