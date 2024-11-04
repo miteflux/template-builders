@@ -188,6 +188,7 @@ source "qemu" "server-2025-standard-eval" {
   output_directory = "${var.output_dir}/windows-server-2025-standard-eval"
   qemuargs         = [
     ["-m", "${var.windows_memory}M"], ["-smp", var.windows_cpus],
+    ["-enable-kvm"], ["-cpu", "host,migratable=on,topoext=on,svm=on,host-cache-info=on,l3-cache=off"],
     ["-drive", "file=${var.windows_iso_2025_eval},media=cdrom,index=2"],
     ["-drive", "file=${var.windows_virtio_driver},media=cdrom,index=3"], [
       "-drive",
