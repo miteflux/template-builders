@@ -282,11 +282,46 @@ build {
   }
 
   provisioner "ansible" {
-    only             = ["qemu.base-12-x86_64","qemu.base-12-ext4-x86_64"]
+    only             = ["qemu.base-12-x86_64"]
     ansible_env_vars = [
       "ANSIBLE_SSH_ARGS='-o ControlMaster=no -o ControlPersist=180s -o ServerAliveInterval=120s -o TCPKeepAlive=yes'"
     ]
     playbook_file = "./${var.config_folder}debian-12/ansible/tasks.yml"
+  }
+
+  provisioner "shell" {
+    only             = ["qemu.base-12-ext4-x86_64"]
+    valid_exit_codes = [0, 1, 127]
+    inline           = [
+      "apt-get -y install grub-efi parted cloud-init cloud-guest-utils",
+      "grub-install --verbose --removable --no-uefi-secure-boot --efi-directory=/boot/efi/ --bootloader-id=BOOT --target=x86_64-efi /dev/vda",
+      "sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet\"/GRUB_CMDLINE_LINUX_DEFAULT=\"net.ifnames=0 biosdevname=0 console=tty0 console=ttyS0,115200n8\"/' /etc/default/grub",
+      "update-grub",
+      "parted /dev/vda set 2 esp on",
+      "parted /dev/vda set 2 boot on",
+      "apt-get -y remove parted",
+      "rm -rf /tmp/*",
+      "rm -rf /var/tmp/*",
+      "rm -rf /etc/ssh/*host*key*",
+      "truncate -s 0 /etc/machine-id",
+      "truncate -s 0 /var/log/auth.log",
+      "truncate -s 0 /var/log/wtmp",
+      "truncate -s 0 /var/log/lastlog",
+      "truncate -s 0 /var/log/dpkg.log",
+      "apt-get -y autoremove --purge",
+      "/usr/bin/systemctl enable qemu-guest-agent",
+      "apt-get clean",
+      "rm -rf /usr/share/man/??",
+      "rm -rf /usr/share/man/??_*",
+      "echo \"source /etc/network/interfaces.d/*\" > /etc/network/interfaces",
+      "sed -i -e \"s/^#\\?PasswordAuthentication.*/PasswordAuthentication no/g\" /etc/ssh/sshd_config",
+      "dd if=/dev/zero of=/zeroed_file bs=1M oflag=direct || /bin/true",
+      "rm -rf /zeroed_file",
+      "sync",
+      "passwd -d root",
+      "passwd -l root",
+      "history -c"
+    ]
   }
 
   provisioner "shell" {
