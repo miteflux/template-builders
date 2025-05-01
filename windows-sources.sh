@@ -1,5 +1,12 @@
 mkdir -p ./source
 
+if [ -f "./source/windows-server-2025.iso" ]; then
+    echo "windows-server-2025.iso already exists. Skipping..."
+else
+   echo "Downloading windows-server-2025.iso..."
+   curl https://software-static.download.prss.microsoft.com/dbazure/888969d5-f34g-4e03-ac9d-1f9786c66749/26100.1742.240906-0331.ge_release_svc_refresh_SERVER_EVAL_x64FRE_en-us.iso -o ./source/windows-server-2025.iso -L -#
+ fi
+
 if [ -f "./source/windows-server-2022-eval.iso" ]; then
     echo "windows-server-2022-eval.iso already exists. Skipping..."
 else
