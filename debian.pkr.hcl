@@ -29,6 +29,8 @@ variables {
   iso_12_checksum       = "1257373c706d8c07e6917942736a865dfff557d21d76ea3040bb1039eb72a054"
   iso_12_arm            = "https://cdimage.debian.org/debian-cd/current/arm64/iso-cd/debian-12.5.0-arm64-netinst.iso"
   iso_12_arm_checksum   = "14c2ca243ee7f6e447cc4466296d974ee36645c06d72043236c3fbea78f1948d3af88d65139105a475288f270e4b636e6885143d01bdf69462620d1825e470ae"
+  iso_13                = "https://cdimage.debian.org/cdimage/trixie_di_rc1/amd64/iso-cd/debian-trixie-DI-rc1-amd64-netinst.iso"
+  iso_13_checksum       = "2cf9e35f8cd135fa858ff89f0447d0b5e0c2b51da372196bd078eee47ef1d262"
   iso_testing           = "https://cdimage.debian.org/cdimage/daily-builds/daily/20230422-3/amd64/iso-cd/debian-testing-amd64-netinst.iso"
   iso_testing_checksum  = "c1917d3caf56446f9fd5f02d2be1c8071da3defef8ca05ef2a867c9e1ebbeac1b47fcca429b5cbeb2cd98dde920b0e689652e775124026a73987c5b5f226801d"
   config_file_base      = "preseed-base.cfg"
@@ -259,10 +261,46 @@ source "qemu" "base-12-aarch64" {
   vnc_port_min     = var.vnc_port_min
   vnc_port_max     = var.vnc_port_max
 }
+
+source "qemu" "base-13-x86_64" {
+  vm_name          = "debian-13-x86_64.qcow2"
+  output_directory = "${var.output_dir}debian-13-x86_64"
+  disk_size        = "2000"
+  boot_command     = [
+    "<esc><wait>", "auto <wait>",
+    "console-keymaps-at/keymap=us <wait>",
+    "console-setup/ask_detect=false <wait>", "debconf/frontend=noninteractive <wait>",
+    "fb=false <wait>", "kbd-chooser/method=us <wait>", "keyboard-configuration/xkb-keymap=us <wait>",
+    "locale=en_US <wait>", "netcfg/get_hostname=debian <wait>",
+    "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/${var.config_folder}debian-13/http/${var.config_file_base} <wait>",
+    "<enter><wait>"
+  ]
+  boot_wait        = var.boot_wait
+  disk_cache       = var.qemu_disk_cache
+  accelerator      = var.accelerator
+  disk_compression = var.disk_compression
+  disk_discard     = var.disk_discard
+  disk_interface   = var.disk_interface
+  format           = var.format
+  headless         = var.headless
+  http_directory   = "."
+  iso_checksum     = var.iso_12_checksum
+  iso_urls         = [var.iso_12]
+  net_device       = var.net_device
+  qemuargs         = [["-m", "${var.ram}M"], ["-smp", "${var.cpu}"]]
+  shutdown_command = "echo '${var.ssh_password}' | shutdown -P now"
+  ssh_password     = var.ssh_password
+  ssh_username     = var.ssh_username
+  ssh_wait_timeout = var.ssh_wait_timeout
+  vnc_bind_address = var.vnc_bind_address
+  vnc_port_min     = var.vnc_port_min
+  vnc_port_max     = var.vnc_port_max
+}
+
 build {
   sources = [
     "source.qemu.base-10-x86_64", "source.qemu.base-11-x86_64", "source.qemu.xfce-11-x86_64",
-    "source.qemu.base-12-x86_64","source.qemu.base-12-ext4-x86_64", "source.qemu.base-12-aarch64"
+    "source.qemu.base-12-x86_64","source.qemu.base-12-ext4-x86_64", "source.qemu.base-12-aarch64","source.qemu.base-13-x86_64"
   ]
 
   provisioner "ansible" {
@@ -351,5 +389,13 @@ build {
       "passwd -l root",
       "history -c"
     ]
+  }
+
+  provisioner "ansible" {
+    only             = ["qemu.base-13-x86_64"]
+    ansible_env_vars = [
+      "ANSIBLE_SSH_ARGS='-o ControlMaster=no -o ControlPersist=180s -o ServerAliveInterval=120s -o TCPKeepAlive=yes'"
+    ]
+    playbook_file = "./${var.config_folder}debian-13/ansible/tasks.yml"
   }
 }
