@@ -394,7 +394,7 @@ build {
     only             = ["qemu.base-13-x86_64"]
     valid_exit_codes = [0, 1, 127]
     inline           = [
-      "apt-get -y install grub-efi parted cloud-init cloud-guest-utils",
+      "apt-get -y install grub-efi parted cloud-init cloud-guest-utils systemd-timesyncd",
       "grub-install --verbose --removable --no-uefi-secure-boot --efi-directory=/boot/efi/ --bootloader-id=BOOT --target=x86_64-efi /dev/vda",
       "sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet\"/GRUB_CMDLINE_LINUX_DEFAULT=\"net.ifnames=0 biosdevname=0 console=tty0 console=ttyS0,115200n8\"/' /etc/default/grub",
       "update-grub",
@@ -412,6 +412,7 @@ build {
       "apt-get -y autoremove --purge",
       "/usr/bin/systemctl enable qemu-guest-agent",
       "apt-get clean",
+      "timedatectl set-ntp true",
       "rm -rf /usr/share/man/??",
       "rm -rf /usr/share/man/??_*",
       "echo \"source /etc/network/interfaces.d/*\" > /etc/network/interfaces",

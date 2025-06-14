@@ -65,6 +65,12 @@ Once all the requirements are installed you may build a template.
 ./packer build -only=qemu.base-12-aarch64 debian.pkr.hcl
 ```
 
+#### Debian 13
+
+```shell
+./packer build -only=qemu.base-13-x86_64 debian.pkr.hcl
+```
+
 #### Oracle Linux
 
 ```shell
