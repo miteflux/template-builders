@@ -47,8 +47,8 @@ source "qemu" "debian-12-x86_64" {
   format           = var.format
   headless         = var.headless
   http_directory   = "."
-  iso_checksum     = var.iso_12_checksum
-  iso_urls         = [var.iso_12]
+  iso_checksum     = var.iso_checksum
+  iso_urls         = [var.iso]
   net_device       = var.net_device
   qemuargs         = [["-m", "${var.ram}M"], ["-smp", "${var.cpu}"]]
   shutdown_command = "echo '${var.ssh_password}' | shutdown -P now"
