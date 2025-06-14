@@ -43,7 +43,7 @@ source "qemu" "alpine-3-22-x86_64" {
   disk_compression = var.disk_compression
   disk_discard     = var.disk_discard
   disk_interface   = var.disk_interface
-  disk_size        = "500"
+  disk_size        = "600"
   format           = var.format
   headless         = var.headless
   http_directory   = "."

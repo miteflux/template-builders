@@ -20,20 +20,20 @@ cat > /etc/motd <<EOF
 This environment is intended for system recovery, troubleshooting, and diagnostics.
 
 Common Tasks:
-   - Mount your root filesystem:   `mount /dev/sdXn /mnt`
-   - Chroot into your system:      `chroot /mnt`
-   - Check disk health:            `smartctl -a /dev/sdX`
-   - Network troubleshooting:      `ip a`, `ping`, `curl`
+   - Mount your root filesystem:   mount /dev/sdXn /mnt
+   - Chroot into your system:      chroot /mnt
+   - Check disk health:            smartctl -a /dev/sdX`
+   - Network troubleshooting:      ip a, ping, curl
 
 ⚠  WARNING:
    This is a temporary environment. No changes made here will persist
    unless written to the mounted filesystem.
 
 📦  Tools Available:
-   - Filesystem repair: `fsck`, `e2fsck`
-   - Partitioning:      `fdisk`, `parted`
-   - Networking:        `ip`, `ifconfig`, `ping`, `wget`, `curl`
-   - Editors:           `nano`, `vi`
+   - Filesystem repair: fsck, e2fsck
+   - Partitioning:      fdisk, parted
+   - Networking:        ip, ifconfig, ping, wget, curl
+   - Editors:           nano, vi
 
 EOF
 
