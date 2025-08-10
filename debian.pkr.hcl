@@ -35,6 +35,7 @@ variables {
   iso_testing_checksum  = "c1917d3caf56446f9fd5f02d2be1c8071da3defef8ca05ef2a867c9e1ebbeac1b47fcca429b5cbeb2cd98dde920b0e689652e775124026a73987c5b5f226801d"
   config_file_base      = "preseed-base.cfg"
   config_file_base_ext4 = "preseed-base-ext4.cfg"
+  config_file_base_xfs = "preseed-base-xfs.cfg"
   config_file_base_arm  = "preseed-base-arm.cfg"
   config_file_xfce      = "preseed-xfce.cfg"
 }
@@ -297,10 +298,47 @@ source "qemu" "base-13-x86_64" {
   vnc_port_max     = var.vnc_port_max
 }
 
+source "qemu" "base-13-xfs-x86_64" {
+  vm_name          = "debian-13-xfs-x86_64.qcow2"
+  output_directory = "${var.output_dir}debian-13-xfs-x86_64"
+  disk_size        = "2000"
+  boot_command = [
+    "<esc><wait>", "auto <wait>",
+    "console-keymaps-at/keymap=us <wait>",
+    "console-setup/ask_detect=false <wait>", "debconf/frontend=noninteractive <wait>",
+    "fb=false <wait>", "kbd-chooser/method=us <wait>", "keyboard-configuration/xkb-keymap=us <wait>",
+    "locale=en_US <wait>", "netcfg/get_hostname=debian <wait>",
+    "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/${var.config_folder}debian-13/http/${var.config_file_base_xfs} <wait>",
+    "<enter><wait>"
+  ]
+  boot_wait        = var.boot_wait
+  disk_cache       = var.qemu_disk_cache
+  accelerator      = var.accelerator
+  disk_compression = var.disk_compression
+  disk_discard     = var.disk_discard
+  disk_interface   = var.disk_interface
+  format           = var.format
+  headless         = var.headless
+  http_directory   = "."
+  iso_checksum     = var.iso_13_checksum
+  iso_urls = [var.iso_13]
+  net_device       = var.net_device
+  qemuargs = [["-m", "${var.ram}M"], ["-smp", "${var.cpu}"]]
+  shutdown_command = "echo '${var.ssh_password}' | shutdown -P now"
+  ssh_password     = var.ssh_password
+  ssh_username     = var.ssh_username
+  ssh_wait_timeout = var.ssh_wait_timeout
+  vnc_bind_address = var.vnc_bind_address
+  vnc_port_min     = var.vnc_port_min
+  vnc_port_max     = var.vnc_port_max
+}
+
 build {
   sources = [
-    "source.qemu.base-10-x86_64", "source.qemu.base-11-x86_64", "source.qemu.xfce-11-x86_64",
-    "source.qemu.base-12-x86_64","source.qemu.base-12-ext4-x86_64", "source.qemu.base-12-aarch64","source.qemu.base-13-x86_64"
+    "source.qemu.base-10-x86_64",
+    "source.qemu.base-11-x86_64", "source.qemu.xfce-11-x86_64",
+    "source.qemu.base-12-x86_64", "source.qemu.base-12-ext4-x86_64", "source.qemu.base-12-aarch64",
+    "source.qemu.base-13-x86_64", "source.qemu.base-13-xfs-x86_64"
   ]
 
   provisioner "ansible" {
@@ -391,7 +429,7 @@ build {
     ]
   }
   provisioner "shell" {
-    only             = ["qemu.base-13-x86_64"]
+    only             = ["qemu.base-13-x86_64", "qemu.base-13-xfs-x86_64"]
     valid_exit_codes = [0, 1, 127]
     inline           = [
       "apt-get -y install grub-efi parted cloud-init cloud-guest-utils systemd-timesyncd",
