@@ -1,5 +1,7 @@
 # Packer build scripts for VirtFusion
 
+This is **Miteflux's fork** of VirtFusion's template-builders. It adds support for **Windows Consumer Editions** (Windows 10/11 Pro Workstation via `windows.pkr.hcl`) and **Windows Server 2012 R2** (eval image in `windows-server.pkr.hcl`).
+
 ## Prepare templates on Debian 11/12
 
 Install Debian 11/12 on a VM with at least 2GB RAM. Then run the following to prepare the environment.
@@ -8,7 +10,7 @@ Install Debian 11/12 on a VM with at least 2GB RAM. Then run the following to pr
 apt-get install git curl unzip gnupg2 software-properties-common ansible -y
 apt-get install --no-install-recommends qemu-system qemu-utils -y
 
-git clone https://bitbucket.org/virtfusion-public/packer.git
+git clone https://github.com/miteflux/template-builders
 cd packer
 
 wget https://releases.hashicorp.com/packer/1.10.0/packer_1.10.0_linux_amd64.zip
@@ -92,13 +94,21 @@ Once all the requirements are installed you may build a template.
 ```
 
 ### Microsoft Windows
-A script is supplied to download the evaluation versions of Windows Server and the VirtIO drivers. This will allow you to build the evaluation versions.
+A script is supplied to download the evaluation versions of Windows Server and the VirtIO drivers (`windows-sources.sh`). This covers Server 2012 R2, 2019, 2022, 2025 eval ISOs and the VirtIO drivers.
+
+**Windows 10 and Windows 11** do not have an automatic download script. Microsoft does not provide direct, scriptable ISO downloads for consumer editions. You must obtain the Windows 10/11 Pro Workstation (or equivalent) ISOs yourself and place them in `./source/`, then set the correct paths and checksums in `windows.pkr.hcl`.
 
 ```shell
 sh windows-sources.sh
 ```
 
-If you would like to build from retail media, you will need to supply the ISO images.
+If you would like to build from retail media for any Server edition, you will need to supply the ISO images.
+
+#### Server 2012 R2
+
+```shell
+./packer build -only=qemu.server-2012r2-standard-eval windows-server.pkr.hcl
+``
 
 #### Server 2019
 
@@ -118,6 +128,21 @@ If you would like to build from retail media, you will need to supply the ISO im
 
 ```shell
 ./packer build -only=qemu.server-2025-standard windows-server.pkr.hcl
+```
+
+#### Windows 10 Pro Workstation & Windows 11 Pro Workstation
+
+There is **no automatic download script** for Windows 10 or Windows 11. Microsoft restricts how these ISOs are distributed, so you must obtain the ISOs yourself (e.g. from [Microsoft's download pages](https://www.microsoft.com/software-download) or your volume-licensing portal), place them in `./source/`, and set the variables `windows_iso_10` / `windows_iso_11` and their checksums in `windows.pkr.hcl`.
+
+```shell
+./packer build -only=qemu.windows-10-pro-workstation windows.pkr.hcl
+./packer build -only=qemu.windows-11-pro-workstation windows.pkr.hcl
+```
+
+Or build both:
+
+```shell
+./packer build windows.pkr.hcl
 ```
 
 ## Useful Windows Commands
